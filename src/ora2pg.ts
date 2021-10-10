@@ -2,6 +2,7 @@
 import * as cp from 'child_process';
 import { resolve } from 'path';
 import * as vscode from 'vscode';
+import { logger } from './logger';
 
 
 var which = require('which');
@@ -25,7 +26,7 @@ export class Ora2pg {
 
     public runCommand(args: string[]): boolean 
     {
-        this.debug('version:' + this.version);
+        logger.logInfo('version:' + this.version);   
         return true;
     }
 
@@ -36,21 +37,16 @@ export class Ora2pg {
         return this._ora2pg;
     }
 
-    public debug(line: string) {
-        this._outputChannel.appendLine(line);
-    }
-
     public async runCommandWithOutput(args: string[])
     {
-        this._outputChannel.show();
-        this._outputChannel.appendLine('Starting Assesment');
+        logger.logInfo('Starting Assesment');
 
         let output: string = "";
         const ora2pg = cp.spawn(this._ora2pg, args, {env: process.env});
 
         ora2pg.stdout.on('data', (chunk) => { output += chunk; });
         ora2pg.stderr.on('data', (chunk) => { 
-            this.debug(chunk.toString());
+            logger.LogAlways(chunk.toString());
             this._outputChannel.appendLine(chunk);
         });
 

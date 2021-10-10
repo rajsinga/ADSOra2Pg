@@ -38,6 +38,11 @@ class ExtensionLogger {
         return message;
     }
 
+    public LogAlways(message: string) : string {
+        this.outputChannel.appendLine(`${message}`);
+        return message;
+    }
+
     /**
      * Writes a debug message to the log stream.
      * @param message Message text.
