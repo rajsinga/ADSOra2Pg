@@ -1,43 +1,43 @@
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-
-// The module 'azdata' contains the Azure Data Studio extensibility API
-// This is a complementary set of APIs that add SQL / Data-specific functionality to the app
-// Import the module and reference it with the alias azdata in your code below
-
 import * as azdata from 'azdata';
+import { Ora2pg } from './ora2pg';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+let isActivated = false;
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "adsora2pg" is now active!');
+export async function activate(context: vscode.ExtensionContext) {
 
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-    context.subscriptions.push(vscode.commands.registerCommand('adsora2pg.helloWorld', () => {
-        // The code you place here will be executed every time your command is executed
+    if (isActivated) {
+        return;
+    }
 
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World!');
+    const ora2pg = await createExtension(context);
+    context.subscriptions.push(vscode.commands.registerCommand('adsora2pg.runOra2PgAssesment', async () => {
+        vscode.window.showInformationMessage(ora2pg.ora2pg);
+        const args: string[] = [];
+
+        args.push('-u', 'system');
+        args.push('-w', 'Yukon!900');
+        args.push('-t', 'SHOW_REPORT');
+        args.push('--dump_as_html');
+
+        ora2pg.debug(args.toString());
+        ora2pg.debug('starting command');
+
+        await ora2pg.runCommandWithOutput(args);
     }));
 
-    context.subscriptions.push(vscode.commands.registerCommand('adsora2pg.showCurrentConnection', () => {
-        // The code you place here will be executed every time your command is executed
-
-        // Display a message box to the user
-        azdata.connection.getCurrentConnection().then(connection => {
-            let connectionId = connection ? connection.connectionId : 'No connection found!';
-            vscode.window.showInformationMessage(connectionId);
-        }, error => {
-             console.info(error);
-        });
+    context.subscriptions.push(vscode.commands.registerCommand('adsora2pg.runOra2PgConversion', () => {
+        vscode.window.showInformationMessage('In Conversion Command');
     }));
+
+    isActivated = true;
+}
+
+async function createExtension(context: vscode.ExtensionContext) : Promise<Ora2pg> {
+    const ora2pg = new Ora2pg();
+    await ora2pg.init();
+    return ora2pg;
 }
 
 // this method is called when your extension is deactivated

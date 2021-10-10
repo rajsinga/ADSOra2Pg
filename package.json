@@ -12,21 +12,34 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:adsora2pg.helloWorld",
-		"onCommand:adsora2pg.showCurrentConnection"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "adsora2pg.helloWorld",
-                "title": "Hello World"
+				"command": "adsora2pg.runOra2PgAssesment",
+				"title": "Run Ora2pg Assesment"
 			},
 			{
-				"command": "adsora2pg.showCurrentConnection",
-                "title": "Show Current Connection"
+				"command": "adsora2pg.runOra2PgConversion",
+				"title": "Run Ora2pg conversion"
 			}
-		]
+		],
+		"menus": {
+			"objectExplorer/item/context": [
+				{
+					"command": "adsora2pg.runOra2PgAssesment",
+					"title": "Run Ora2pg Assesment",
+					"when": "connectionProvider == ORACLE && nodeType && nodeType =~ /^(Server|Schema|table)$/"
+				},
+				{
+					"command": "adsora2pg.runOra2PgConversion",
+					"title": "Run Ora2pg conversion",
+					"when": "connectionProvider == ORACLE && nodeType && nodeType =~ /^(Server|Schema|table)$/"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -49,5 +62,8 @@
 		"mocha": "^7.1.2",
 		"typescript": "^3.8.3",
 		"vscode-test": "^1.3.0"
+	},
+	"dependencies": {
+		"vscode-nls":"5.0.0"
 	}
 }
